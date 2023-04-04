@@ -45,10 +45,12 @@ mysql
 server.get('/movies', function (req, res) {
   console.log('Pedimos a la base de datos que nos muestre las peliculas');
   const genreFilterParam = req.query.genre;
+  const sortFilterParam = req.query.sort;
 
   if (genreFilterParam === '') {
+
     connection
-      .query('SELECT * FROM movies;')
+      .query('SELECT * FROM movies ORDER BY title ASC')
       .then(([results, fields]) => {
         // Devolvemos el resultado de la query:
         res.json({
@@ -60,10 +62,29 @@ server.get('/movies', function (req, res) {
       .catch((err) => {
         throw err;
       });
+
+
+    if (sortFilterParam === 'desc') {
+      connection
+        .query('SELECT * FROM movies ORDER BY title DESC')
+        .then(([results, fields]) => {
+          // Devolvemos el resultado de la query:
+          res.json({
+            success: true,
+            movies: results
+          });
+        })
+        // Si no ha ido bien la ejecución de la query, salta un error:
+        .catch((err) => {
+          throw err;
+        });
+    }
+
+
   } else {
     connection
       // La interpolación de cadenas directamente en la consulta SQL presenta un riesgo de seguridad llamado SQL injection. Hay que utilizar parámetros de consulta preparados (?) para evitar este riesgo:
-      .query('SELECT * FROM movies WHERE genre = ?', [genreFilterParam])
+      .query('SELECT * FROM movies WHERE genre = ? ORDER BY title ASC', [genreFilterParam])
       .then(([results, fields]) => {
         // Devolvemos el resultado de la query con el requisito género:
         res.json({
@@ -77,10 +98,24 @@ server.get('/movies', function (req, res) {
       });
   }
 
+  if (sortFilterParam === 'desc') {
+    connection
+      .query('SELECT * FROM movies WHERE genre = ? ORDER BY title DESC', [genreFilterParam])
+      .then(([results, fields]) => {
+        // Devolvemos el resultado de la query:
+        res.json({
+          success: true,
+          movies: results
+        });
+      })
+      // Si no ha ido bien la ejecución de la query, salta un error:
+      .catch((err) => {
+        throw err;
+      });
+  }
+
+
 });
-
-
-
 
 
 /* {
