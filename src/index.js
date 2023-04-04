@@ -46,61 +46,107 @@ server.get('/movies', function (req, res) {
   console.log('Pedimos a la base de datos que nos muestre las peliculas');
   const genreFilterParam = req.query.genre;
   const sortFilterParam = req.query.sort;
+  console.log(req.query)
 
-  if (genreFilterParam === '') {
+  let myQuery = '';
 
-    connection
-      .query('SELECT * FROM movies ORDER BY title ASC')
-      .then(([results, fields]) => {
-        // Devolvemos el resultado de la query:
-        res.json({
-          success: true,
-          movies: results
-        });
-      })
-      // Si no ha ido bien la ejecución de la query, salta un error:
-      .catch((err) => {
-        throw err;
-      });
-
-
-    if (sortFilterParam === 'desc') {
-      connection
-        .query('SELECT * FROM movies ORDER BY title DESC')
-        .then(([results, fields]) => {
-          // Devolvemos el resultado de la query:
-          res.json({
-            success: true,
-            movies: results
-          });
-        })
-        // Si no ha ido bien la ejecución de la query, salta un error:
-        .catch((err) => {
-          throw err;
-        });
-    }
-
-
-  } else {
-    connection
-      // La interpolación de cadenas directamente en la consulta SQL presenta un riesgo de seguridad llamado SQL injection. Hay que utilizar parámetros de consulta preparados (?) para evitar este riesgo:
-      .query('SELECT * FROM movies WHERE genre = ? ORDER BY title ASC', [genreFilterParam])
-      .then(([results, fields]) => {
-        // Devolvemos el resultado de la query con el requisito género:
-        res.json({
-          success: true,
-          movies: results
-        });
-      })
-      // Si no ha ido bien la ejecución de la query, salta un error:
-      .catch((err) => {
-        throw err;
-      });
+  if (genreFilterParam === '' && sortFilterParam === 'asc') {
+    console.log('caso1')
+    myQuery = 'SELECT * FROM movies ORDER BY title ASC;';
+  } else if (genreFilterParam === '' && sortFilterParam === 'desc') {
+    console.log('caso2')
+    myQuery = 'SELECT * FROM movies ORDER BY title DESC;';
+  } else if (genreFilterParam !== '' && sortFilterParam === 'asc') {
+    console.log('caso3')
+    myQuery = 'SELECT * FROM movies WHERE genre = ? ORDER BY title ASC;';
+  } else if (genreFilterParam !== '' && sortFilterParam === 'desc') {
+    console.log('caso4')
+    myQuery = 'SELECT * FROM movies WHERE genre = ? ORDER BY title DESC;';
   }
+  // La interpolación de cadenas directamente en la consulta SQL presenta un riesgo de seguridad llamado SQL injection. Hay que utilizar parámetros de consulta preparados (?) para evitar este riesgo.
+
+  connection
+    .query(myQuery, [genreFilterParam])
+    .then(([results, fields]) => {
+      // Devolvemos el resultado de la query:
+      res.json({
+        success: true,
+        movies: results
+      });
+    })
+    // Si no ha ido bien la ejecución de la query, salta un error:
+    .catch((err) => {
+      throw err;
+    });
+});
+
+server.post('/login', function (req, res) {
+  connection
+    .query('SELECT * FROM users WHERE email = ? AND password_ = ?;', [req.body.email, req.body.password])
+    .then(([results, fields]) => {
+      // Devolvemos el resultado de la query:
+      console.log(results)
+      if (results.length === 1) {
+        res.json({
+          success: true,
+          userId: results[0].idUSer
+        });
+      } else {
+        res.json({
+          success: false,
+          errorMessage: "Usuaria/o no encontrada/o"
+        });
+      }
+
+    })
+    // Si no ha ido bien la ejecución de la query, salta un error:
+    .catch((err) => {
+      throw err;
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+if (genreFilterParam === '') {
+  connection
+    .query('SELECT * FROM movies ORDER BY title ASC')
+    .then(([results, fields]) => {
+      // Devolvemos el resultado de la query:
+      res.json({
+        success: true,
+        movies: results
+      });
+    })
+    // Si no ha ido bien la ejecución de la query, salta un error:
+    .catch((err) => {
+      throw err;
+    });
+  console.log('hola caracola', sortFilterParam)
+
 
   if (sortFilterParam === 'desc') {
+    console.log('sortfilterparam es desc')
     connection
-      .query('SELECT * FROM movies WHERE genre = ? ORDER BY title DESC', [genreFilterParam])
+      .query('SELECT * FROM movies ORDER BY title DESC')
       .then(([results, fields]) => {
         // Devolvemos el resultado de la query:
         res.json({
@@ -115,7 +161,41 @@ server.get('/movies', function (req, res) {
   }
 
 
-});
+} else {
+  connection
+    // La interpolación de cadenas directamente en la consulta SQL presenta un riesgo de seguridad llamado SQL injection. Hay que utilizar parámetros de consulta preparados (?) para evitar este riesgo:
+    .query('SELECT * FROM movies WHERE genre = ? ORDER BY title ASC', [genreFilterParam])
+    .then(([results, fields]) => {
+      // Devolvemos el resultado de la query con el requisito género:
+      res.json({
+        success: true,
+        movies: results
+      });
+    })
+    // Si no ha ido bien la ejecución de la query, salta un error:
+    .catch((err) => {
+      throw err;
+    });
+}
+
+if (sortFilterParam === 'desc') {
+  connection
+    .query('SELECT * FROM movies WHERE genre = ? ORDER BY title DESC', [genreFilterParam])
+    .then(([results, fields]) => {
+      // Devolvemos el resultado de la query:
+      res.json({
+        success: true,
+        movies: results
+      });
+    })
+    // Si no ha ido bien la ejecución de la query, salta un error:
+    .catch((err) => {
+      throw err;
+    });
+} */
+
+
+
 
 
 /* {
