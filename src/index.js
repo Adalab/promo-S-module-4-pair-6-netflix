@@ -51,16 +51,12 @@ server.get('/movies', function (req, res) {
   let myQuery = '';
 
   if (genreFilterParam === '' && sortFilterParam === 'asc') {
-    console.log('caso1')
     myQuery = 'SELECT * FROM movies ORDER BY title ASC;';
   } else if (genreFilterParam === '' && sortFilterParam === 'desc') {
-    console.log('caso2')
     myQuery = 'SELECT * FROM movies ORDER BY title DESC;';
   } else if (genreFilterParam !== '' && sortFilterParam === 'asc') {
-    console.log('caso3')
     myQuery = 'SELECT * FROM movies WHERE genre = ? ORDER BY title ASC;';
   } else if (genreFilterParam !== '' && sortFilterParam === 'desc') {
-    console.log('caso4')
     myQuery = 'SELECT * FROM movies WHERE genre = ? ORDER BY title DESC;';
   }
   // La interpolación de cadenas directamente en la consulta SQL presenta un riesgo de seguridad llamado SQL injection. Hay que utilizar parámetros de consulta preparados (?) para evitar este riesgo.
@@ -97,7 +93,6 @@ server.post('/login', function (req, res) {
           errorMessage: "Usuaria/o no encontrada/o"
         });
       }
-
     })
     // Si no ha ido bien la ejecución de la query, salta un error:
     .catch((err) => {
