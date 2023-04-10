@@ -2,11 +2,24 @@ const express = require('express');
 const cors = require('cors');
 const mysql = require('mysql2/promise');
 
+//MongoDB:
+const mongoose = require('mongoose');
+
+const dbConnect = require('../config/connection.js');
+dbConnect();
+const Movie = require('../models/movies');
+Movie();
+const User = require('../models/users');
+User();
+const Actor = require('../models/actors');
+Actor();
+
 
 // CREAMOS LA CONFIGURACION DE SERVER:
 const server = express();
 server.use(cors());
-server.use(express.json());
+//server.use(express.json());
+server.use(express.json({ limit: '25mb' }));
 
 // init express aplication
 const serverPort = 4000;
@@ -100,6 +113,44 @@ server.post('/login', function (req, res) {
     });
 });
 
+
+// MongoDB:
+server.get('/movies_all_mongo', function (req, res) {
+
+  const query = Movie.find({}).then((docs) => {
+
+    res.json({
+      success: true,
+      movies: docs,
+    });
+  });
+})
+
+/* server.get('/movies_all_mongo', (req, res) => {
+  Movies.find({}, { title: 1, _id: 0 })
+    .sort({ title: -1 })
+    .then((doc) => {
+      res.json({ 
+        success: true, 
+        movies: doc });
+    })
+    .catch((error) => {
+      console.log('Error', error);
+    });
+}); */
+
+
+
+/* server.get('/movies_filterGenre_mongo/:genreValue', (req, res) => {
+  const { genreValue } = req.params;
+  Movies.find({ genre: genreValue })
+    .then((doc) => {
+      res.json({ success: true, movies: doc });
+    })
+    .catch((error) => {
+      console.log('Error', error);
+    });
+}); */
 
 
 
