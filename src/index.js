@@ -115,29 +115,38 @@ server.post('/login', function (req, res) {
 
 
 // MongoDB:
-server.get('/movies_all_mongo', function (req, res) {
-
+/* server.get('/movies_all_mongo', function (req, res) {
   const query = Movie.find({}).then((docs) => {
-
     res.json({
       success: true,
       movies: docs,
     });
   });
-})
+}) */
 
-/* server.get('/movies_all_mongo', (req, res) => {
-  Movies.find({}, { title: 1, _id: 0 })
-    .sort({ title: -1 })
+server.get('/movies_all_mongo', (req, res) => {
+  const sort = req.query.sort;
+  console.log(req.query)
+
+  let number
+  if (sort === "asc") {
+    number = 1
+  } else {
+    number = -1
+  }
+
+  Movie.find({})
+    .sort({ title: number })
     .then((doc) => {
-      res.json({ 
-        success: true, 
-        movies: doc });
+      res.json({
+        success: true,
+        movies: doc
+      });
     })
     .catch((error) => {
       console.log('Error', error);
     });
-}); */
+});
 
 
 
