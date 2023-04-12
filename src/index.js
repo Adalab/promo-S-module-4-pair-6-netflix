@@ -14,6 +14,9 @@ User();
 const Actor = require('../models/actors');
 Actor();
 
+/* const Favorite = require('../models/favoritas.js');
+Favorite(); */
+
 
 // CREAMOS LA CONFIGURACION DE SERVER:
 const server = express();
